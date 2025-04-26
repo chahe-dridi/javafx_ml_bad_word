@@ -14,6 +14,10 @@ class WordRequest(BaseModel):
 
 @app.post("/predict/")
 def predict_word(request: WordRequest):
-    X = vectorizer.transform([request.word])
+    word = request.word.lower().strip()  # clean
+    if word not in vectorizer.vocabulary_:
+        return {"result": "unknown"}  # or guess bad if you want
+
+    X = vectorizer.transform([word])
     prediction = model.predict(X)
     return {"result": "bad" if prediction[0] == 1 else "good"}
